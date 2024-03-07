@@ -1,0 +1,23 @@
+{
+    "name": "Suelos",
+    "label": "Suelos",
+    "alias": "suelos",
+    "description": "manage all suelos",
+    "keywords": ["suelos"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Suelos\\Providers\\SuelosServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "menus": [
+        {
+            "icon": "fas fa-circle",
+            "name": "Suelos",
+            "route": "suelos.index",
+            "permission": "read suelos"
+        }
+    ],
+    "permissions": ["suelos"]
+}

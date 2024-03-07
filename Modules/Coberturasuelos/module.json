@@ -1,0 +1,23 @@
+{
+    "name": "Coberturasuelos",
+    "label": "Coberturasuelos",
+    "alias": "coberturasuelos",
+    "description": "manage all coberturasuelos",
+    "keywords": ["coberturasuelos"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Coberturasuelos\\Providers\\CoberturasuelosServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "menus": [
+        {
+            "icon": "fas fa-circle",
+            "name": "Coberturasuelos",
+            "route": "coberturasuelos.index",
+            "permission": "read coberturasuelos"
+        }
+    ],
+    "permissions": ["coberturasuelos"]
+}
