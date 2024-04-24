@@ -8,11 +8,13 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TaxonomiaSueloCaaguazuController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CultivosController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\CustomHomeController;
-
+use App\Http\Controllers\SoilController;
+use App\Http\Controllers\welcomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,13 +33,14 @@ use App\Http\Controllers\CustomHomeController;
 Route::get('/', function () {
     return view('welcome');
 })->name('index');
-
+Route::get('welcome', [welcomeController::class, 'index'])->name('/');
 
 Auth::routes([
     'register'  => true,
     'reset'     => false,
     'confirm'   => false
 ]);
+
 
 Route::middleware(['auth'])->get('/home', [DashboardController::class, 'index'])->name('home');
 
@@ -78,6 +81,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
     Route::post('guardarcambios', [TaxonomiaSueloCaaguazuController::class, 'guardarcambios'])->name('guardarcambios');
     Route::match(['get', 'post'], 'cargar', [TaxonomiaSueloCaaguazuController::class, 'cargar'])->name('cargar');
+    Route::post('/calcular', [SoilController::class, 'calcular'])->name('calcular');
     Route::get('obtener', [UserController::class, 'obtener'])->name('obtener');
     Route::get('filemanager', [FileManagerController::class, 'index'])->middleware(['permission:filemanager'])->name('filemanager');
 

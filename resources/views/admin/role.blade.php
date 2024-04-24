@@ -144,7 +144,7 @@
                     },
                 });
             });
-            
+
             $(document).on("click", '.btn-delete', function() {
                 let id = $(this).attr("data-id");
                 let name = $(this).attr("data-name");

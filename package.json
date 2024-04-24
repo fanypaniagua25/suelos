@@ -22,6 +22,7 @@
     },
     "dependencies": {
         "laravel-echo": "^1.15.3",
+        "meteosource": "^1.0.1",
         "pusher-js": "^8.4.0-rc2",
         "socket.io": "^4.7.2",
         "unfetch": "^5.0.0"

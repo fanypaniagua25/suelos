@@ -1,0 +1,23 @@
+{
+    "name": "Cultivos",
+    "label": "Cultivos",
+    "alias": "cultivos",
+    "description": "manage all cultivos",
+    "keywords": ["cultivos"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Cultivos\\Providers\\CultivosServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "menus": [
+        {
+            "icon": "fas fa-circle",
+            "name": "Cultivos",
+            "route": "cultivos.index",
+            "permission": "read cultivos"
+        }
+    ],
+    "permissions": ["cultivos"]
+}

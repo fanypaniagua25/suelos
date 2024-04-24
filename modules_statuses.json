@@ -2,5 +2,6 @@
     "Mapas": true,
     "Suelos": true,
     "MAPA_SUELOS": true,
-    "Coberturasuelos": true
+    "Coberturasuelos": false,
+    "Cultivos": true
 }

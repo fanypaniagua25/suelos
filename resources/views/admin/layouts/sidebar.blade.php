@@ -100,8 +100,9 @@
                         </a>
                     </li>
                 @endcan
+                @canany(['read setting', 'filemanager', 'read module'])
                 <li class="nav-header ml-2">CONFIGURACIONES</li>
-                @can('read setting')
+            @endcanany                @can('read setting')
                     <li class="nav-item">
                         <a href="{{ route('setting.index') }}" class="nav-link {{ request()->routeIs('setting.index') ? 'active':'' }}">
                             <i class="fas fa-cog nav-icon"></i>
