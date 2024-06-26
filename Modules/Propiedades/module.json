@@ -1,0 +1,23 @@
+{
+    "name": "Propiedades",
+    "label": "Propiedades",
+    "alias": "propiedades",
+    "description": "manage all propiedades",
+    "keywords": ["propiedades"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Propiedades\\Providers\\PropiedadesServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "menus": [
+        {
+            "icon": "fas fa-circle",
+            "name": "Propiedades",
+            "route": "propiedades.index",
+            "permission": "read propiedades"
+        }
+    ],
+    "permissions": ["propiedades"]
+}

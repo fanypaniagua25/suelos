@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="/css/MarkerCluster.css">
     <link rel="stylesheet" href="/css/MarkerCluster.Default.css">
     <link rel="stylesheet" href="/css/leaflet-control-geocoder.Geocoder.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.7.0/dist/geosearch.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -31,6 +32,8 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJZDcyULPNMrfxTqh10-V7J23rEVamj2U&libraries=places">
+    </script>
 @endpush
 @section('content')
     <div class="content-wrapper">
@@ -110,9 +113,12 @@
         <!-- /.content-header -->
         <!-- Main content -->
         <div>
-
             <div id="map"></div>
             <div id="selection-box"></div>
+        </div>
+        <div id="opacity-control">
+            <label for="opacity-slider">Opacidad de Taxonomía:</label>
+            <input type="range" id="opacity-slider" min="0" max="1" step="0.01" value="1">
         </div>
         <div class="modal" id="customModal">
             <div class="modal-dialog">
@@ -166,6 +172,7 @@
     <script src="/js/data/Ciudades_Caaguazu_3.js"></script>
     <script src="/js/data/Distritos_Caaguazu_4.js"></script>
     <script src="/js/data/Viasprincipales_Caaguazu_5.js"></script>
+    <script src="https://unpkg.com/leaflet-geosearch@3.7.0/dist/geosearch.umd.js"></script>
     <script>
         var highlightLayer;
         var json_Taxonomiadesuelos_DeptoCaaguazu_2 = @json($taxonomia);
@@ -200,6 +207,7 @@
                 location: 'smart'
             }
         });
+
         var bounds_group = new L.featureGroup([]);
 
         function setBounds() {
@@ -220,6 +228,8 @@
         });
         layer_OSMStandard_0;
         map.addLayer(layer_OSMStandard_0);
+
+
         function pop_Distritos_Caaguazucopiar_1(feature, layer) {
             layer.on({
                 mouseout: function(e) {
@@ -238,8 +248,8 @@
             });
             var popupContent =
                 '<table>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -251,9 +261,9 @@
                         .properties[
                             'DPTO'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -264,9 +274,9 @@
                         feature
                         .properties['DISTRITO'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -277,9 +287,9 @@
                         feature
                         .properties['DPTO_DESC'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2"><strong>DIST_DESC</strong><br />' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2"><strong>DIST_DESC</strong><br />' +
                 (
                     feature
                     .properties[
@@ -287,9 +297,9 @@
                     null ?
                     autolinker.link(feature.properties['DIST_DESC'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -301,8 +311,8 @@
                         .properties[
                             'CLAVE'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </table>';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </table>';
             layer.bindPopup(popupContent, {
                 maxHeight: 400
             });
@@ -500,6 +510,17 @@
                 layer.on('contextmenu', editSoil);
             });
         }
+        // Obtener referencia al control deslizante
+        const opacitySlider = document.getElementById('opacity-slider');
+
+        // Agregar evento de cambio al control deslizante
+        opacitySlider.addEventListener('input', function() {
+            const transparencyValue = 1 - parseFloat(this.value);
+            layer_Taxonomiadesuelos_DeptoCaaguazu_2.setStyle({
+                fillOpacity: transparencyValue
+            });
+        });
+
         /*$(document).ready(function() {
                     if (typeof map !== 'undefined' && typeof layer_Taxonomiadesuelos_DeptoCaaguazu_2 !== 'undefined') {
                         // Adjuntar evento de clic a la capa de taxonomía
@@ -568,7 +589,8 @@
             var taxonomiaData = @json($taxonomia);
             var ordenCounts = {};
             var colorPalette = ['#FF5733', '#33FF57', '#5733FF', '#FF33F5', '#33F5FF',
-            '#F5FF33']; // Ejemplo de una paleta de colores
+                '#F5FF33'
+            ]; // Ejemplo de una paleta de colores
 
             // Contar la cantidad de cada orden de suelo
             var totalOrdenes = 0;
@@ -588,7 +610,7 @@
                 data.push(ordenCounts[orden]);
                 percentages.push(((ordenCounts[orden] / totalOrdenes) * 100).toFixed(2) + '%');
                 backgroundColors.push(colorPalette[index % colorPalette
-                .length]); // Asignar un color de la paleta a cada orden
+                    .length]); // Asignar un color de la paleta a cada orden
             });
 
             // Crear el gráfico
@@ -805,8 +827,8 @@
             });
             var popupContent =
                 '<table>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -818,10 +840,10 @@
                         .properties[
                             'ORDEN'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <th scope="row"></th>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td>' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <th scope="row"></th>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td>' +
                 (
                     feature
                     .properties[
@@ -834,7 +856,7 @@
                             'DESC']
                         .toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           </table>';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       </table>';
             layer.bindPopup(popupContent, {
                 maxHeight: 400
             });
@@ -1000,8 +1022,8 @@
             });
             var popupContent =
                 '<table>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1013,9 +1035,9 @@
                         .properties[
                             'DPTO'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1026,9 +1048,9 @@
                         feature
                         .properties['DPTO_DESC'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1039,9 +1061,9 @@
                         feature
                         .properties['DISTRITO'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1052,9 +1074,9 @@
                         feature
                         .properties['DIST_DESC'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1066,8 +1088,8 @@
                         .properties[
                             'CLAVE'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </table>';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </table>';
             layer.bindPopup(popupContent, {
                 maxHeight: 400
             });
@@ -1135,8 +1157,8 @@
             });
             var popupContent =
                 '<table>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1148,9 +1170,9 @@
                         .properties[
                             'DPTO'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1161,9 +1183,9 @@
                         feature
                         .properties['DISTRITO'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1174,9 +1196,9 @@
                         feature
                         .properties['DPTO_DESC'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2"><strong>DIST_DESC</strong><br />' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2"><strong>DIST_DESC</strong><br />' +
                 (
                     feature
                     .properties[
@@ -1184,9 +1206,9 @@
                     null ?
                     autolinker.link(feature.properties['DIST_DESC'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1198,8 +1220,8 @@
                         .properties[
                             'CLAVE'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </table>';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </table>';
             layer.bindPopup(popupContent, {
                 maxHeight: 400
             });
@@ -1252,8 +1274,8 @@
             });
             var popupContent =
                 '<table>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1264,9 +1286,9 @@
                         feature
                         .properties['NOMBRE'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1277,9 +1299,9 @@
                         feature
                         .properties['LONG_KM_EN'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1290,9 +1312,9 @@
                         feature
                         .properties['RUTA_NRO'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1304,9 +1326,9 @@
                         .properties[
                             'ANCHO'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1318,9 +1340,9 @@
                         .properties[
                             'TIPO'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <td colspan="2">' +
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <td colspan="2">' +
                 (
                     feature
                     .properties[
@@ -1331,8 +1353,8 @@
                         feature
                         .properties['LONG_MTS'].toLocaleString()) : '') +
                 '</td>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </tr>\
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </table>';
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </tr>\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </table>';
             layer.bindPopup(popupContent, {
                 maxHeight: 400
             });
@@ -1366,11 +1388,19 @@
         });
         bounds_group.addLayer(layer_Viasprincipales_Caaguazu_5);
         map.addLayer(layer_Viasprincipales_Caaguazu_5);
+        var caaguazuBounds = layer_Distritos_Caaguazu_4.getBounds();
+
         var osmGeocoder = new L.Control.Geocoder({
             collapsed: true,
             position: 'topleft',
-            text: 'Search',
-            title: 'Testing'
+            text: 'Buscar en Caaguazú',
+            title: 'Buscar en Caaguazú',
+            geocoder: new L.Control.Geocoder.Nominatim({
+                geocodingQueryParams: {
+                    viewbox: caaguazuBounds.toBBoxString(),
+                    bounded: 1
+                }
+            })
         }).addTo(map);
         document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
             .className += ' fa fa-search';
@@ -1382,7 +1412,7 @@
             '<img src="/images/legend/Viasprincipales_Caaguazu_5.png" /> Vias principales Caaguazu': layer_Viasprincipales_Caaguazu_5,
             '<img src="/images/legend/Distritos_Caaguazu_4.png" /> Distritos Caaguazu': layer_Distritos_Caaguazu_4,
             '<img src="/images/legend/Ciudades_Caaguazu_3.png" /> Ciudades Caaguazu': cluster_Ciudades_Caaguazu_3,
-            'Taxonom&iacute;a de Suelos<br /><table><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_AGUA0.png" /></td><td>AGUA</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_ALFISOL1.png" /></td><td>ALFISOL</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_CIUDAD2.png" /></td><td>CIUDAD</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_ENTISOL3.png" /></td><td>ENTISOL</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_INCEPTISOL4.png" /></td><td>INCEPTISOL</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_OXISOL5.png" /></td><td>OXISOL</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_TIERRASMISCELANEAS6.png" /></td><td>TIERRAS MISCELANEAS</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_ULTISOL7.png" /></td><td>ULTISOL</td></tr></table>': layer_Taxonomiadesuelos_DeptoCaaguazu_2,
+            'Taxonom&iacute;a de Suelos<br /><table><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_AGUA0.png" /></td><td>AGUA</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_ALFISOL1.png" /></td><td>ALFISOL</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_ENTISOL3.png" /></td><td>ENTISOL</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_INCEPTISOL4.png" /></td><td>INCEPTISOL</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_OXISOL5.png" /></td><td>OXISOL</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_TIERRASMISCELANEAS6.png" /></td><td>TIERRAS MISCELANEAS</td></tr><tr><td style="text-align: center;"><img src="/images/legend/Taxonomiadesuelos_DeptoCaaguazu_2_ULTISOL7.png" /></td><td>ULTISOL</td></tr></table>': layer_Taxonomiadesuelos_DeptoCaaguazu_2,
         }).addTo(map);
         setBounds();
 

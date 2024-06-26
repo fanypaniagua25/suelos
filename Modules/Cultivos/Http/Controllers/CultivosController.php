@@ -23,7 +23,7 @@ class CultivosController extends Controller
     }
     public function index()
     {
-        $x['title']     = "Cultivo";
+        $x['title']     = "Cultivos";
         $x['data']      = Cultivo::get();
 
         return view('cultivos::index', $x);

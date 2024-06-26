@@ -12,7 +12,7 @@ class SettingController extends Controller
 {
     public function index()
     {
-        $x['title']     = 'Setting';
+        $x['title']     = 'Configuraciones';
         $x['category']  = Setting::select('category')->groupBy('category')->get();
         return view('admin.setting', $x);
     }
@@ -36,9 +36,9 @@ class SettingController extends Controller
                 'password'  => bcrypt($request->password)
             ]);
             $setting->assignRole($request->role);
-            Alert::success('Pemberitahuan', 'Data <b>' . $setting->name . '</b> berhasil dibuat')->toToast()->toHtml();
+            Alert::success('Atenci&oacute;n', 'Data <b>' . $setting->name . '</b> creado exitosamente')->toToast()->toHtml();
         } catch (\Throwable $th) {
-            Alert::error('Pemberitahuan', 'Data <b>' . $setting->name . '</b> gagal dibuat : ' . $th->getMessage())->toToast()->toHtml();
+            Alert::error('Atenci&oacute;n', 'Data <b>' . $setting->name . '</b> no se pudo crear : ' . $th->getMessage())->toToast()->toHtml();
         }
         return back();
     }
@@ -59,19 +59,19 @@ class SettingController extends Controller
             'key'       => ['required'],
             'value'     => ['required']
         ]);
-        
+
         if ($validator->fails()) {
             return back()->withErrors($validator)
                 ->withInput();
         }
 
         try {
-            for ($i = 0; $i < count($request->key); $i++) { 
+            for ($i = 0; $i < count($request->key); $i++) {
                 Setting::where(['key' => $request->key[$i]])->update(['value' => $request->value[$i]]);
             }
-            Alert::success('Pemberitahuan', 'Setting berhasil disimpan')->toToast()->toHtml();
+            Alert::success('Atenci&oacute;n', 'Configuración guardada exitosamente')->toToast()->toHtml();
         } catch (\Throwable $th) {
-            Alert::error('Pemberitahuan', 'Setting gagal disimpan : ' . $th->getMessage())->toToast()->toHtml();
+            Alert::error('Atenci&oacute;n', 'La configuración no se pudo guardar : ' . $th->getMessage())->toToast()->toHtml();
         }
         return back();
     }
@@ -81,9 +81,9 @@ class SettingController extends Controller
         try {
             $setting = Setting::find($request->id);
             $setting->delete();
-            Alert::success('Pemberitahuan', 'Data <b>' . $setting->name . '</b> berhasil dihapus')->toToast()->toHtml();
+            Alert::success('Atenci&oacute;n', 'Data <b>' . $setting->name . '</b> borrado exitosamente')->toToast()->toHtml();
         } catch (\Throwable $th) {
-            Alert::error('Pemberitahuan', 'Data <b>' . $setting->name . '</b> gagal dihapus : ' . $th->getMessage())->toToast()->toHtml();
+            Alert::error('Atenci&oacute;n', 'Data <b>' . $setting->name . '</b> no se pudo eliminar : ' . $th->getMessage())->toToast()->toHtml();
         }
         return back();
     }

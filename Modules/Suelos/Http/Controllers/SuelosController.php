@@ -13,7 +13,7 @@ class SuelosController extends Controller
 {
     public function index()
     {
-        $x['title']     = "Suelo";
+        $x['title']     = "Órdenes de Suelos";
         $x['data']      = Suelo::get();
         $x['taxonomia'] = '';
 

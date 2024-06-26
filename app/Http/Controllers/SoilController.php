@@ -21,21 +21,27 @@ class SoilController extends Controller
 
     public function calcular(Request $request)
     {
-        $ordenSuelo = $request->input('ordenSuelo');
-        Log::info('Orden de suelo recibida: ' . $ordenSuelo);
+        try {
+            $ordenSuelo = $request->input('ordenSuelo');
+            Log::info('Orden de suelo recibida: ' . $ordenSuelo);
 
-        // Crear una instancia del modelo Soil con la orden de suelo recibida
-        $suelo = new Soil();
-        $suelo->orden = $ordenSuelo;
+            // Crear una instancia del modelo Soil con la orden de suelo recibida
+            $suelo = new Soil();
+            $suelo->orden = $ordenSuelo;
 
-        Log::info('Antes de llamar al servicio CropRotationService');
+            Log::info('Antes de llamar al servicio CropRotationService');
 
-        // Obtener los cultivos recomendados utilizando el servicio CropRotationService
-        $cultivosRecomendados = $this->cropRotationService->recommendCrops($suelo);
+            // Obtener los cultivos recomendados utilizando el servicio CropRotationService
+            $cultivosRecomendados = $this->cropRotationService->recommendCrops($suelo);
 
-        Log::info('Después de llamar al servicio CropRotationService');
-        Log::info('Cultivos recomendados: ' . implode(', ', $cultivosRecomendados));
+            Log::info('Después de llamar al servicio CropRotationService');
+            Log::info('Cultivos recomendados: ' . implode(', ', $cultivosRecomendados));
 
-        return response()->json($cultivosRecomendados);
+            return response()->json($cultivosRecomendados);
+        } catch (\Exception $e) {
+            Log::error('Error en la función calcular: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json(['error' => 'Ocurrió un error al procesar la solicitud'], 500);
+        }
     }
 }

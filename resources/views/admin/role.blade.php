@@ -56,7 +56,7 @@
                                                 <td>{{ $i->guard_name }}</td>
                                                 <td>
                                                     @if ($i->name == 'superadmin' || count($i->permissions) == count($permission))
-                                                        All permission
+                                                        Todos los permisos
                                                     @else
                                                         {{ $i->permissions->implode('name', '|') }}
                                                     @endif

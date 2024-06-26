@@ -3,5 +3,6 @@
     "Suelos": true,
     "MAPA_SUELOS": true,
     "Coberturasuelos": false,
-    "Cultivos": true
+    "Cultivos": true,
+    "Propiedades": false
 }

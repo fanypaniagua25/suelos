@@ -21,7 +21,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $x['title']     = 'User';
+        $x['title']     = 'Usuarios';
         $x['data']      = User::get();
         $x['role']      = Role::get();
         return view('admin.user', $x);
@@ -48,10 +48,10 @@ class UserController extends Controller
             ]);
             $user->assignRole($request->role);
             DB::commit();
-            Alert::success('Pemberitahuan', 'Data <b>' . $user->name . '</b> berhasil dibuat')->toToast()->toHtml();
+            Alert::success('Atencion', 'Data <b>' . $user->name . '</b> creado exitosamente')->toToast()->toHtml();
         } catch (\Throwable $th) {
             DB::rollback();
-            Alert::error('Pemberitahuan', 'Data <b>' . $user->name . '</b> gagal dibuat : ' . $th->getMessage())->toToast()->toHtml();
+            Alert::error('Atencion', 'Data <b>' . $user->name . '</b> fallo al crear : ' . $th->getMessage())->toToast()->toHtml();
         }
         return back();
     }
@@ -100,10 +100,10 @@ class UserController extends Controller
             $user->update($data);
             $user->syncRoles($request->role);
             DB::commit();
-            Alert::success('Pemberitahuan', 'Data <b>' . $user->name . '</b> berhasil disimpan')->toToast()->toHtml();
+            Alert::success('Atencion', 'Data <b>' . $user->name . '</b> guardado correctamente')->toToast()->toHtml();
         } catch (\Throwable $th) {
             DB::rollback();
-            Alert::error('Pemberitahuan', 'Data <b>' . $user->name . '</b> gagal disimpan : ' . $th->getMessage())->toToast()->toHtml();
+            Alert::error('Atencion', 'Data <b>' . $user->name . '</b> error al guardar : ' . $th->getMessage())->toToast()->toHtml();
         }
         return back();
     }
@@ -113,9 +113,9 @@ class UserController extends Controller
         try {
             $user = User::find($request->id);
             $user->delete();
-            Alert::success('Pemberitahuan', 'Data <b>' . $user->name . '</b> berhasil dihapus')->toToast()->toHtml();
+            Alert::success('Atenci&oacute;n', 'Data <b>' . $user->name . '</b>borrado exitosamente')->toToast()->toHtml();
         } catch (\Throwable $th) {
-            Alert::error('Pemberitahuan', 'Data <b>' . $user->name . '</b> gagal dihapus : ' . $th->getMessage())->toToast()->toHtml();
+            Alert::error('Atenci&oacute;n', 'Data <b>' . $user->name . '</b> no se pudo eliminar: ' . $th->getMessage())->toToast()->toHtml();
         }
         return back();
     }

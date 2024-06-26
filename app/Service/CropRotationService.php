@@ -7,103 +7,110 @@ use Illuminate\Support\Facades\Log;
 
 class CropRotationService
 {
+    private $cropToFamily = [];
     private $idealValues = [
         'ULTISOL' => [
-            'Soja' => ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70],
-            'Maíz' => ['ph' => 6.0, 'mo' => 3.1, 'al3' => 0.5, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 23, 'humedad' => 72],
-            'Algodón' => ['ph' => 6.0, 'mo' => 2.5, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 65],
-            'Arroz secano' => ['ph' => 5.8, 'mo' => 2.2, 'al3' => 0.8, 'fosforo' => 12, 'precipitacion_anual' => 1600, 'temperatura' => 26, 'humedad' => 75],
-            'Batata' => ['ph' => 5.8, 'mo' => 2.0, 'al3' => 0.7, 'fosforo' => 14, 'precipitacion_anual' => 1200, 'temperatura' => 24, 'humedad' => 70],
-            'Mandioca' => ['ph' => 5.8, 'mo' => 2.5, 'al3' => 0.9, 'fosforo' => 10, 'precipitacion_anual' => 1500, 'temperatura' => 27, 'humedad' => 72],
-            'Maní' => ['ph' => 6.0, 'mo' => 2.7, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 26, 'humedad' => 68],
-            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.4, 'al3' => 0.4, 'fosforo' => 20, 'precipitacion_anual' => 1100, 'temperatura' => 28, 'humedad' => 65],
-            'Menta' => ['ph' => 6.0, 'mo' => 3.0, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 24, 'humedad' => 75],
-            'Stevia' => ['ph' => 5.8, 'mo' => 2.8, 'al3' => 0.7, 'fosforo' => 12, 'precipitacion_anual' => 1500, 'temperatura' => 26, 'humedad' => 70],
-            'Tabaco' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 68]
+            'ph' => 5.5,
+            'mo' => 2.5,
+            'al3' => 0.5,
+            'fosforo' => 10,
+            'precipitacion_anual' => 1000,
+            'temperatura' => 25,
+            'humedad' => 60,
+            'Soja' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Maíz' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Algodón' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Arroz secano' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Batata' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Mandioca' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Maní' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Menta' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Stevia' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Tabaco' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68]
         ],
         'ENTISOL' => [
-            'Arroz secano' => ['ph' => 5.8, 'mo' => 2.2, 'al3' => 0.8, 'fosforo' => 12, 'precipitacion_anual' => 1600, 'temperatura' => 26, 'humedad' => 75],
-            'Maíz' => ['ph' => 6.0, 'mo' => 3.1, 'al3' => 0.5, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 23, 'humedad' => 72],
-            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.4, 'al3' => 0.4, 'fosforo' => 20, 'precipitacion_anual' => 1100, 'temperatura' => 28, 'humedad' => 65],
-            'Soja' => ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70],
-            'Algodón' => ['ph' => 6.0, 'mo' => 2.5, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 65],
-            'Girasol' => ['ph' => 6.5, 'mo' => 2.6, 'al3' => 0.4, 'fosforo' => 22, 'precipitacion_anual' => 1000, 'temperatura' => 26, 'humedad' => 60],
-            'Tabaco' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 68],
-            'Sésamo' => ['ph' => 6.0, 'mo' => 2.4, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1200, 'temperatura' => 28, 'humedad' => 65],
-            'Tartago sin cáscara' => ['ph' => 6.2, 'mo' => 2.2, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1100, 'temperatura' => 27, 'humedad' => 62]
+            'Arroz secano' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Maíz' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Soja' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Algodón' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Girasol' => ['ph' => 6.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60],
+            'Tabaco' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Sesamo' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Tartago sin cáscara' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 62]
         ],
         'ALFISOL' => [
-            'Ajo' => ['ph' => 6.0, 'mo' => 3.0, 'al3' => 0.4, 'fosforo' => 20, 'precipitacion_anual' => 1200, 'temperatura' => 18, 'humedad' => 70],
-            'Algodón' => ['ph' => 6.0, 'mo' => 2.5, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 65],
-            'Arveja' => ['ph' => 6.5, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1100, 'temperatura' => 20, 'humedad' => 75],
-            'Batata' => ['ph' => 5.8, 'mo' => 2.0, 'al3' => 0.7, 'fosforo' => 14, 'precipitacion_anual' => 1200, 'temperatura' => 24, 'humedad' => 70],
-            'Canola' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1000, 'temperatura' => 18, 'humedad' => 72],
-            'Cebolla de cabeza' => ['ph' => 6.0, 'mo' => 2.8, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1300, 'temperatura' => 20, 'humedad' => 68],
-            'Frutilla' => ['ph' => 6.2, 'mo' => 3.2, 'al3' => 0.4, 'fosforo' => 22, 'precipitacion_anual' => 1100, 'temperatura' => 18, 'humedad' => 75],
-            'Girasol' => ['ph' => 6.5, 'mo' => 2.6, 'al3' => 0.4, 'fosforo' => 22, 'precipitacion_anual' => 1000, 'temperatura' => 26, 'humedad' => 60],
-            'Habilla' => ['ph' => 6.0, 'mo' => 2.4, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1400, 'temperatura' => 22, 'humedad' => 70],
-            'Locote' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 24, 'humedad' => 68],
-            'Maíz' => ['ph' => 6.0, 'mo' => 3.1, 'al3' => 0.5, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 23, 'humedad' => 72],
-            'Maní' => ['ph' => 6.0, 'mo' => 2.7, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 26, 'humedad' => 68],
-            'Papa' => ['ph' => 5.8, 'mo' => 3.4, 'al3' => 0.7, 'fosforo' => 20, 'precipitacion_anual' => 1000, 'temperatura' => 18, 'humedad' => 75],
-            'Poroto' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.4, 'fosforo' => 18, 'precipitacion_anual' => 1200, 'temperatura' => 24, 'humedad' => 70],
-            'Soja' => ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70],
-            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.4, 'al3' => 0.4, 'fosforo' => 20, 'precipitacion_anual' => 1100, 'temperatura' => 28, 'humedad' => 65],
-            'Tomate' => ['ph' => 6.0, 'mo' => 3.0, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 22, 'humedad' => 72],
-            'Trigo' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.4, 'fosforo' => 22, 'precipitacion_anual' => 900, 'temperatura' => 20, 'humedad' => 68],
-            'Zanahoria' => ['ph' => 6.0, 'mo' => 2.8, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1100, 'temperatura' => 18, 'humedad' => 74],
-            'Tabaco' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 68],
-            'Sésamo' => ['ph' => 6.0, 'mo' => 2.4, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1200, 'temperatura' => 28, 'humedad' => 65],
-            'Tartago sin cáscara' => ['ph' => 6.2, 'mo' => 2.2, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1100, 'temperatura' => 27, 'humedad' => 62]
+            'Ajo' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Algodón' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Arveja' => ['ph' => 6.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Batata' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Canola' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Cebolla de cabeza' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Frutilla' => ['ph' => 6.2, 'mo' => 3.2, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Girasol' => ['ph' => 6.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60],
+            'Habilla' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Locote' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Maíz' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Maní' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Papa' => ['ph' => 5.5, 'mo' => 3.4, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Poroto' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Soja' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Tomate' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Trigo' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Zanahoria' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 74],
+            'Tabaco' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Sesamo' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Tartago sin cáscara' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 62]
         ],
         'OXISOL' => [
-            'Caña de azúcar' => ['ph' => 5.8, 'mo' => 2.0, 'al3' => 0.8, 'fosforo' => 12, 'precipitacion_anual' => 1800, 'temperatura' => 28, 'humedad' => 78],
-            'Mandioca' => ['ph' => 5.8, 'mo' => 2.5, 'al3' => 0.9, 'fosforo' => 10, 'precipitacion_anual' => 1500, 'temperatura' => 27, 'humedad' => 72],
-            'Soja' => ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70],
-            'Maní' => ['ph' => 6.0, 'mo' => 2.7, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 26, 'humedad' => 68],
-            'Algodón' => ['ph' => 6.0, 'mo' => 2.5, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 65],
-            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.4, 'al3' => 0.4, 'fosforo' => 20, 'precipitacion_anual' => 1100, 'temperatura' => 28, 'humedad' => 65],
-            'Tabaco' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 68],
-            'Sésamo' => ['ph' => 6.0, 'mo' => 2.4, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1200, 'temperatura' => 28, 'humedad' => 65],
-            'Tartago sin cáscara' => ['ph' => 6.2, 'mo' => 2.2, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1100, 'temperatura' => 27, 'humedad' => 62]
+            'Caña de azúcar' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1800, 'temperatura' => 25, 'humedad' => 78],
+            'Mandioca' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Soja' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Maní' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Algodón' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Tabaco' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Sesamo' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Tartago sin cáscara' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 62]
         ],
         'INCEPTISOL' => [
-            'Ajo' => ['ph' => 6.0, 'mo' => 3.0, 'al3' => 0.4, 'fosforo' => 20, 'precipitacion_anual' => 1200, 'temperatura' => 18, 'humedad' => 70],
-            'Algodón' => ['ph' => 6.0, 'mo' => 2.5, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 65],
-            'Arveja' => ['ph' => 6.5, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1100, 'temperatura' => 20, 'humedad' => 75],
-            'Batata' => ['ph' => 5.8, 'mo' => 2.0, 'al3' => 0.7, 'fosforo' => 14, 'precipitacion_anual' => 1200, 'temperatura' => 24, 'humedad' => 70],
-            'Canola' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1000, 'temperatura' => 18, 'humedad' => 72],
-            'Cebolla de cabeza' => ['ph' => 6.0, 'mo' => 2.8, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1300, 'temperatura' => 20, 'humedad' => 68],
-            'Frutilla' => ['ph' => 6.2, 'mo' => 3.2, 'al3' => 0.4, 'fosforo' => 22, 'precipitacion_anual' => 1100, 'temperatura' => 18, 'humedad' => 75],
-            'Girasol' => ['ph' => 6.5, 'mo' => 2.6, 'al3' => 0.4, 'fosforo' => 22, 'precipitacion_anual' => 1000, 'temperatura' => 26, 'humedad' => 60],
-            'Habilla' => ['ph' => 6.0, 'mo' => 2.4, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1400, 'temperatura' => 22, 'humedad' => 70],
-            'Locote' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 24, 'humedad' => 68],
-            'Maíz' => ['ph' => 6.0, 'mo' => 3.1, 'al3' => 0.5, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 23, 'humedad' => 72],
-            'Maní' => ['ph' => 6.0, 'mo' => 2.7, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 26, 'humedad' => 68],
-            'Papa' => ['ph' => 5.8, 'mo' => 3.4, 'al3' => 0.7, 'fosforo' => 20, 'precipitacion_anual' => 1000, 'temperatura' => 18, 'humedad' => 75],
-            'Poroto' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.4, 'fosforo' => 18, 'precipitacion_anual' => 1200, 'temperatura' => 24, 'humedad' => 70],
-            'Soja' => ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70],
-            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.4, 'al3' => 0.4, 'fosforo' => 20, 'precipitacion_anual' => 1100, 'temperatura' => 28, 'humedad' => 72],
-            'Tomate' => ['ph' => 6.0, 'mo' => 3.0, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 22, 'humedad' => 72],
-            'Trigo' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.4, 'fosforo' => 22, 'precipitacion_anual' => 900, 'temperatura' => 20, 'humedad' => 68],
-            'Zanahoria' => ['ph' => 6.0, 'mo' => 2.8, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1100, 'temperatura' => 18, 'humedad' => 74],
-            'Tabaco' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 68],
-            'Menta' => ['ph' => 6.0, 'mo' => 3.0, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 24, 'humedad' => 75],
-            'Sésamo' => ['ph' => 6.0, 'mo' => 2.4, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1200, 'temperatura' => 28, 'humedad' => 65]
+            'Ajo' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Algodón' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Arveja' => ['ph' => 6.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Batata' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Canola' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Cebolla de cabeza' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Frutilla' => ['ph' => 6.2, 'mo' => 3.2, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Girasol' => ['ph' => 6.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60],
+            'Habilla' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Locote' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Maíz' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Maní' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Papa' => ['ph' => 5.5, 'mo' => 3.4, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Poroto' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Soja' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Tomate' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Trigo' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Zanahoria' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 74],
+            'Tabaco' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Menta' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Sesamo' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65]
         ],
         'TIERRAS MISCELANEAS' => [
-            'Algodón' => ['ph' => 6.0, 'mo' => 2.5, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 65],
-            'Arroz secano' => ['ph' => 5.8, 'mo' => 2.2, 'al3' => 0.8, 'fosforo' => 12, 'precipitacion_anual' => 1600, 'temperatura' => 26, 'humedad' => 75],
-            'Batata' => ['ph' => 5.8, 'mo' => 2.0, 'al3' => 0.7, 'fosforo' => 14, 'precipitacion_anual' => 1200, 'temperatura' => 24, 'humedad' => 70],
-            'Maíz' => ['ph' => 6.0, 'mo' => 3.1, 'al3' => 0.5, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 23, 'humedad' => 72],
-            'Mandioca' => ['ph' => 5.8, 'mo' => 2.5, 'al3' => 0.9, 'fosforo' => 10, 'precipitacion_anual' => 1500, 'temperatura' => 27, 'humedad' => 72],
-            'Maní' => ['ph' => 6.0, 'mo' => 2.7, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 26, 'humedad' => 68],
-            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.4, 'al3' => 0.4, 'fosforo' => 20, 'precipitacion_anual' => 1100, 'temperatura' => 28, 'humedad' => 65],
-            'Tabaco' => ['ph' => 6.2, 'mo' => 2.6, 'al3' => 0.5, 'fosforo' => 18, 'precipitacion_anual' => 1300, 'temperatura' => 27, 'humedad' => 68],
-            'Menta' => ['ph' => 6.0, 'mo' => 3.0, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 24, 'humedad' => 75],
-            'Stevia' => ['ph' => 5.8, 'mo' => 2.8, 'al3' => 0.7, 'fosforo' => 12, 'precipitacion_anual' => 1500, 'temperatura' => 26, 'humedad' => 70]
+            'Algodón' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Arroz secano' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Batata' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70],
+            'Maíz' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Mandioca' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 72],
+            'Maní' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Sorgo para grano' => ['ph' => 6.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 65],
+            'Tabaco' => ['ph' => 6.2, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 68],
+            'Menta' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 75],
+            'Stevia' => ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 70]
         ],
-
         'default' => [
             'ph' => 5.5,
             'mo' => 2.5,
@@ -114,7 +121,6 @@ class CropRotationService
             'humedad' => 60,
         ],
     ];
-
     private $weights = [
         'ph' => 0.3,
         'mo' => 0.2,
@@ -124,18 +130,12 @@ class CropRotationService
         'temperatura' => 0.05,
         'humedad' => 0.05,
     ];
-
     public function recommendCrops(Soil $soil): array
     {
         Log::info('Entrando al método recommendCrops');
         Log::info('Orden de suelo recibida: ' . $soil->orden);
-
         $crops = [];
-
-        // Asignar valores predeterminados si alguna propiedad es nula
         $soil = $this->assignDefaultValues($soil);
-
-        // Lógica para recomendar cultivos basada en las propiedades del suelo
         if ($soil->orden == 'ULTISOL') {
             $crops = [
                 'Soja' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Soja'), $this->idealValues['ULTISOL']['Soja'], $this->weights),
@@ -159,7 +159,7 @@ class CropRotationService
                 'Algodón' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Algodón'), $this->idealValues['ENTISOL']['Algodón'], $this->weights),
                 'Girasol' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Girasol'), $this->idealValues['ENTISOL']['Girasol'], $this->weights),
                 'Tabaco' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Tabaco'), $this->idealValues['ENTISOL']['Tabaco'], $this->weights),
-                'Sésamo' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Sésamo'), $this->idealValues['ENTISOL']['Sésamo'], $this->weights),
+                'Sesamo' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Sesamo'), $this->idealValues['ENTISOL']['Sesamo'], $this->weights),
                 'Tartago sin cáscara' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Tartago sin cáscara'), $this->idealValues['ENTISOL']['Tartago sin cáscara'], $this->weights),
             ];
         } elseif ($soil->orden == 'ALFISOL') {
@@ -184,7 +184,7 @@ class CropRotationService
                 'Trigo' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Trigo'), $this->idealValues['ALFISOL']['Trigo'], $this->weights),
                 'Zanahoria' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Zanahoria'), $this->idealValues['ALFISOL']['Zanahoria'], $this->weights),
                 'Tabaco' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Tabaco'), $this->idealValues['ALFISOL']['Tabaco'], $this->weights),
-                'Sésamo' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Sésamo'), $this->idealValues['ALFISOL']['Sésamo'], $this->weights),
+                'Sesamo' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Sesamo'), $this->idealValues['ALFISOL']['Sesamo'], $this->weights),
                 'Tartago sin cáscara' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Tartago sin cáscara'), $this->idealValues['ALFISOL']['Tartago sin cáscara'], $this->weights),
             ];
         } elseif ($soil->orden == 'OXISOL') {
@@ -196,7 +196,7 @@ class CropRotationService
                 'Algodón' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Algodón'), $this->idealValues['OXISOL']['Algodón'], $this->weights),
                 'Sorgo para grano' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Sorgo para grano'), $this->idealValues['OXISOL']['Sorgo para grano'], $this->weights),
                 'Tabaco' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Tabaco'), $this->idealValues['OXISOL']['Tabaco'], $this->weights),
-                'Sésamo' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Sésamo'), $this->idealValues['OXISOL']['Sésamo'], $this->weights),
+                'Sesamo' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Sesamo'), $this->idealValues['OXISOL']['Sesamo'], $this->weights),
                 'Tartago sin cáscara' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Tartago sin cáscara'), $this->idealValues['OXISOL']['Tartago sin cáscara'], $this->weights),
             ];
         } elseif ($soil->orden == 'INCEPTISOL') {
@@ -222,7 +222,7 @@ class CropRotationService
                 'Zanahoria' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Zanahoria'), $this->idealValues['INCEPTISOL']['Zanahoria'], $this->weights),
                 'Tabaco' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Tabaco'), $this->idealValues['INCEPTISOL']['Tabaco'], $this->weights),
                 'Menta' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Menta'), $this->idealValues['INCEPTISOL']['Menta'], $this->weights),
-                'Sésamo' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Sésamo'), $this->idealValues['INCEPTISOL']['Sésamo'], $this->weights),
+                'Sesamo' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Sesamo'), $this->idealValues['INCEPTISOL']['Sesamo'], $this->weights),
             ];
         } elseif ($soil->orden == 'TIERRAS MISCELANEAS') {
             $crops = [
@@ -238,227 +238,41 @@ class CropRotationService
                 'Stevia' => $this->calculateGlobalSuitability($this->getActualValues($soil, 'Stevia'), $this->idealValues['TIERRAS MISCELANEAS']['Stevia'], $this->weights),
             ];
         }
-        // ... (agregar las demás órdenes de suelo)
-
         Log::info('Cultivos recomendados antes de ordenar: ' . implode(', ', array_keys($crops)));
-
-        // Ordenar la lista de cultivos por conveniencia global
-        // Ordenar la lista de cultivos por conveniencia global
         $orderedCrops = collect($crops)->sortByDesc('suitability')->keys()->toArray();
-
         Log::debug('Cultivos después de ordenar: ' . implode(', ', $orderedCrops));
-
-        // Aplicar reglas de rotación de cultivos
         $orderedCrops = $this->applyRotationRules($orderedCrops);
-
         return $orderedCrops;
     }
-
     private function getActualValues(Soil $soil, string $crop): array
     {
-        if ($soil->orden == 'ULTISOL') {
-            switch ($crop) {
-                case 'Soja':
-                    return ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70];
-                case 'Maíz':
-                    return ['ph' => 6.0, 'mo' => 3.1, 'al3' => 0.5, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 23, 'humedad' => 72];
-                case 'Algodón':
-                    return ['ph' => 6.2, 'mo' => 2.2, 'al3' => 0.7, 'fosforo' => 15, 'precipitacion_anual' => 1300, 'temperatura' => 25, 'humedad' => 68];
-                case 'Arroz secano':
-                    return ['ph' => 6.0, 'mo' => 3.2, 'al3' => 0.8, 'fosforo' => 15, 'precipitacion_anual' => 1450, 'temperatura' => 24, 'humedad' => 78];
-                case 'Batata':
-                    return ['ph' => 5.8, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 12, 'precipitacion_anual' => 1500, 'temperatura' => 25, 'humedad' => 70];
-                case 'Mandioca':
-                    return ['ph' => 5.5, 'mo' => 2.7, 'al3' => 0.8, 'fosforo' => 12, 'precipitacion_anual' => 1550, 'temperatura' => 24, 'humedad' => 75];
-                case 'Maní':
-                    return ['ph' => 6.2, 'mo' => 2.3, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70];
-                case 'Sorgo para grano':
-                    return ['ph' => 6.0, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1350, 'temperatura' => 24, 'humedad' => 72];
-                case 'Menta':
-                    return ['ph' => 6.0, 'mo' => 3.0, 'al3' => 0.3, 'fosforo' => 18, 'precipitacion_anual' => 1500, 'temperatura' => 21, 'humedad' => 75];
-                case 'Stevia':
-                    return ['ph' => 5.8, 'mo' => 2.6, 'al3' => 0.6, 'fosforo' => 14, 'precipitacion_anual' => 1500, 'temperatura' => 22, 'humedad' => 75];
-                case 'Tabaco':
-                    return ['ph' => 5.8, 'mo' => 2.7, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1400, 'temperatura' => 21, 'humedad' => 75];
-                default:
-                    return $this->idealValues;
-            }
-        } elseif ($soil->orden == 'ENTISOL') {
-            switch ($crop) {
-                case 'Arroz secano':
-                    return ['ph' => 6.0, 'mo' => 3.2, 'al3' => 0.8, 'fosforo' => 15, 'precipitacion_anual' => 1450, 'temperatura' => 24, 'humedad' => 78];
-                case 'Maíz':
-                    return ['ph' => 6.0, 'mo' => 3.1, 'al3' => 0.5, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 23, 'humedad' => 72];
-                case 'Sorgo para grano':
-                    return ['ph' => 6.0, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1350, 'temperatura' => 24, 'humedad' => 72];
-                case 'Soja':
-                    return ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70];
-                case 'Algodón':
-                    return ['ph' => 6.2, 'mo' => 2.2, 'al3' => 0.7, 'fosforo' => 15, 'precipitacion_anual' => 1300, 'temperatura' => 25, 'humedad' => 68];
-                case 'Girasol':
-                    return ['ph' => 6.2, 'mo' => 2.4, 'al3' => 0.5, 'fosforo' => 15, 'precipitacion_anual' => 1350, 'temperatura' => 23, 'humedad' => 68];
-                case 'Tabaco':
-                    return ['ph' => 5.8, 'mo' => 2.7, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1400, 'temperatura' => 21, 'humedad' => 75];
-                case 'Sésamo':
-                    return ['ph' => 6.0, 'mo' => 2.2, 'al3' => 0.6, 'fosforo' => 13, 'precipitacion_anual' => 1350, 'temperatura' => 24, 'humedad' => 68];
-                case 'Tartago sin cáscara':
-                    return ['ph' => 6.1, 'mo' => 2.3, 'al3' => 0.5, 'fosforo' => 15, 'precipitacion_anual' => 1350, 'temperatura' => 23, 'humedad' => 70];
-                default:
-                    return $this->idealValues;
-            }
-        } elseif ($soil->orden == 'ALFISOL') {
-            switch ($crop) {
-                case 'Ajo':
-                    return ['ph' => 6.5, 'mo' => 3.0, 'al3' => 0.3, 'fosforo' => 20, 'precipitacion_anual' => 1600, 'temperatura' => 22, 'humedad' => 75];
-                case 'Algodón':
-                    return ['ph' => 6.2, 'mo' => 2.2, 'al3' => 0.7, 'fosforo' => 15, 'precipitacion_anual' => 1300, 'temperatura' => 25, 'humedad' => 68];
-                case 'Arveja':
-                    return ['ph' => 6.3, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 18, 'precipitacion_anual' => 1400, 'temperatura' => 21, 'humedad' => 72];
-                case 'Batata':
-                    return ['ph' => 5.8, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 12, 'precipitacion_anual' => 1500, 'temperatura' => 25, 'humedad' => 70];
-                case 'Canola':
-                    return ['ph' => 6.0, 'mo' => 2.2, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1400, 'temperatura' => 20, 'humedad' => 75];
-                case 'Cebolla de cabeza':
-                    return ['ph' => 6.5, 'mo' => 2.8, 'al3' => 0.2, 'fosforo' => 22, 'precipitacion_anual' => 1500, 'temperatura' => 22, 'humedad' => 72];
-                case 'Frutilla':
-                    return ['ph' => 5.5, 'mo' => 3.2, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 20, 'humedad' => 75];
-                case 'Girasol':
-                    return ['ph' => 6.2, 'mo' => 2.4, 'al3' => 0.5, 'fosforo' => 15, 'precipitacion_anual' => 1350, 'temperatura' => 23, 'humedad' => 68];
-                case 'Habilla':
-                    return ['ph' => 6.0, 'mo' => 2.8, 'al3' => 0.3, 'fosforo' => 18, 'precipitacion_anual' => 1400, 'temperatura' => 21, 'humedad' => 72];
-                case 'Locote':
-                    return ['ph' => 6.3, 'mo' => 2.9, 'al3' => 0.4, 'fosforo' => 19, 'precipitacion_anual' => 1450, 'temperatura' => 24, 'humedad' => 70];
-                case 'Maíz':
-                    return ['ph' => 6.0, 'mo' => 3.1, 'al3' => 0.5, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 23, 'humedad' => 72];
-                case 'Maní':
-                    return ['ph' => 6.2, 'mo' => 2.3, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70];
-                case 'Papa':
-                    return ['ph' => 5.8, 'mo' => 2.6, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 18, 'humedad' => 78];
-                case 'Poroto':
-                    return ['ph' => 6.1, 'mo' => 2.9, 'al3' => 0.4, 'fosforo' => 17, 'precipitacion_anual' => 1450, 'temperatura' => 22, 'humedad' => 72];
-                case 'Soja':
-                    return ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70];
-                case 'Sorgo para grano':
-                    return ['ph' => 6.0, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1350, 'temperatura' => 24, 'humedad' => 72];
-                case 'Tomate':
-                    return ['ph' => 6.3, 'mo' => 2.9, 'al3' => 0.3, 'fosforo' => 20, 'precipitacion_anual' => 1450, 'temperatura' => 22, 'humedad' => 72];
-                case 'Trigo':
-                    return ['ph' => 6.0, 'mo' => 2.6, 'al3' => 0.5, 'fosforo' => 15, 'precipitacion_anual' => 1300, 'temperatura' => 19, 'humedad' => 75];
-                case 'Zanahoria':
-                    return ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 18, 'precipitacion_anual' => 1400, 'temperatura' => 20, 'humedad' => 72];
-                case 'Tabaco':
-                    return ['ph' => 5.8, 'mo' => 2.7, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1400, 'temperatura' => 21, 'humedad' => 75];
-                case 'Sésamo':
-                    return ['ph' => 6.0, 'mo' => 2.2, 'al3' => 0.6, 'fosforo' => 13, 'precipitacion_anual' => 1350, 'temperatura' => 24, 'humedad' => 68];
-                case 'Tartago sin cáscara':
-                    return ['ph' => 6.1, 'mo' => 2.3, 'al3' => 0.5, 'fosforo' => 15, 'precipitacion_anual' => 1350, 'temperatura' => 23, 'humedad' => 70];
-                default:
-                    return $this->idealValues;
-            }
-        } elseif ($soil->orden == 'OXISOL') {
-            switch ($crop) {
-                case 'Caña de azúcar':
-                    return ['ph' => 6.2, 'mo' => 3.5, 'al3' => 0.3, 'fosforo' => 18, 'precipitacion_anual' => 1600, 'temperatura' => 24, 'humedad' => 80];
-                case 'Mandioca':
-                    return ['ph' => 5.5, 'mo' => 2.7, 'al3' => 0.8, 'fosforo' => 12, 'precipitacion_anual' => 1550, 'temperatura' => 24, 'humedad' => 75];
-                case 'Soja':
-                    return ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70];
-                case 'Maní':
-                    return ['ph' => 6.2, 'mo' => 2.3, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70];
-                case 'Algodón':
-                    return ['ph' => 6.2, 'mo' => 2.2, 'al3' => 0.7, 'fosforo' => 15, 'precipitacion_anual' => 1300, 'temperatura' => 25, 'humedad' => 68];
-                case 'Sorgo para grano':
-                    return ['ph' => 6.0, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1350, 'temperatura' => 24, 'humedad' => 72];
-                case 'Tabaco':
-                    return ['ph' => 5.8, 'mo' => 2.7, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1400, 'temperatura' => 21, 'humedad' => 75];
-                case 'Sésamo':
-                    return ['ph' => 6.0, 'mo' => 2.2, 'al3' => 0.6, 'fosforo' => 13, 'precipitacion_anual' => 1350, 'temperatura' => 24, 'humedad' => 68];
-                case 'Tartago sin cáscara':
-                    return ['ph' => 6.1, 'mo' => 2.3, 'al3' => 0.5, 'fosforo' => 15, 'precipitacion_anual' => 1350, 'temperatura' => 23, 'humedad' => 70];
-                default:
-                    return $this->idealValues;
-            }
-        } elseif ($soil->orden == 'INCEPTISOL') {
-            switch ($crop) {
-                case 'Ajo':
-                    return ['ph' => 6.5, 'mo' => 3.0, 'al3' => 0.3, 'fosforo' => 20, 'precipitacion_anual' => 1600, 'temperatura' => 22, 'humedad' => 75];
-                case 'Algodón':
-                    return ['ph' => 6.2, 'mo' => 2.2, 'al3' => 0.7, 'fosforo' => 15, 'precipitacion_anual' => 1300, 'temperatura' => 25, 'humedad' => 68];
-                case 'Arveja':
-                    return ['ph' => 6.3, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 18, 'precipitacion_anual' => 1400, 'temperatura' => 21, 'humedad' => 72];
-                case 'Batata':
-                    return ['ph' => 5.8, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 12, 'precipitacion_anual' => 1500, 'temperatura' => 25, 'humedad' => 70];
-                case 'Canola':
-                    return ['ph' => 6.0, 'mo' => 2.2, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1400, 'temperatura' => 20, 'humedad' => 75];
-                case 'Cebolla de cabeza':
-                    return ['ph' => 6.5, 'mo' => 2.8, 'al3' => 0.2, 'fosforo' => 22, 'precipitacion_anual' => 1500, 'temperatura' => 22, 'humedad' => 72];
-                case 'Frutilla':
-                    return ['ph' => 5.5, 'mo' => 3.2, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 20, 'humedad' => 75];
-                case 'Girasol':
-                    return ['ph' => 6.2, 'mo' => 2.4, 'al3' => 0.5, 'fosforo' => 15, 'precipitacion_anual' => 1350, 'temperatura' => 23, 'humedad' => 68];
-                case 'Habilla':
-                    return ['ph' => 6.0, 'mo' => 2.8, 'al3' => 0.3, 'fosforo' => 18, 'precipitacion_anual' => 1400, 'temperatura' => 21, 'humedad' => 72];
-                case 'Locote':
-                    return ['ph' => 6.3, 'mo' => 2.9, 'al3' => 0.4, 'fosforo' => 19, 'precipitacion_anual' => 1450, 'temperatura' => 24, 'humedad' => 70];
-                case 'Maíz':
-                    return ['ph' => 6.0, 'mo' => 3.1, 'al3' => 0.5, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 23, 'humedad' => 72];
-                case 'Maní':
-                    return ['ph' => 6.2, 'mo' => 2.3, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70];
-                case 'Papa':
-                    return ['ph' => 5.8, 'mo' => 2.6, 'al3' => 0.6, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 18, 'humedad' => 78];
-                case 'Poroto':
-                    return ['ph' => 6.1, 'mo' => 2.9, 'al3' => 0.4, 'fosforo' => 17, 'precipitacion_anual' => 1450, 'temperatura' => 22, 'humedad' => 72];
-                case 'Soja':
-                    return ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 16, 'precipitacion_anual' => 1400, 'temperatura' => 25, 'humedad' => 70];
-                case 'Sorgo para grano':
-                    return ['ph' => 6.0, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 14, 'precipitacion_anual' => 1350, 'temperatura' => 24, 'humedad' => 72];
-                case 'Tomate':
-                    return ['ph' => 6.3, 'mo' => 2.9, 'al3' => 0.3, 'fosforo' => 20, 'precipitacion_anual' => 1450, 'temperatura' => 22, 'humedad' => 72];
-                case 'Trigo':
-                    return ['ph' => 6.0, 'mo' => 2.6, 'al3' => 0.5, 'fosforo' => 15, 'precipitacion_anual' => 1300, 'temperatura' => 19, 'humedad' => 75];
-                case 'Zanahoria':
-                    return ['ph' => 6.2, 'mo' => 2.8, 'al3' => 0.4, 'fosforo' => 18, 'precipitacion_anual' => 1400, 'temperatura' => 20, 'humedad' => 72];
-                case 'Tabaco':
-                    return ['ph' => 5.8, 'mo' => 2.7, 'al3' => 0.6, 'fosforo' => 18, 'precipitacion_anual' => 1400, 'temperatura' => 21, 'humedad' => 75];
-                case 'Menta':
-                    return ['ph' => 6.0, 'mo' => 3.0, 'al3' => 0.3, 'fosforo' => 18, 'precipitacion_anual' => 1500, 'temperatura' => 21, 'humedad' => 75];
-                case 'Sésamo':
-                    return ['ph' => 6.0, 'mo' => 2.2, 'al3' => 0.6, 'fosforo' => 13, 'precipitacion_anual' => 1350, 'temperatura' => 24, 'humedad' => 68];
-                default:
-                    return $this->idealValues;
-            }
-        } elseif ($soil->orden == 'TIERRAS MISCELANEAS') {
-            switch ($crop) {
-                case 'Algodón':
-                    return ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60];
-                case 'Arroz secano':
-                    return ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60];
-                case 'Batata':
-                    return ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60];
-                case 'Maíz':
-                    return ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60];
-                case 'Mandioca':
-                    return ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60];
-                case 'Maní':
-                    return ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60];
-                case 'Sorgo para grano':
-                    return ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60];
-                case 'Tabaco':
-                    return ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60];
-                case 'Menta':
-                    return ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60];
-                case 'Stevia':
-                    return ['ph' => 5.5, 'mo' => 2.5, 'al3' => 0.5, 'fosforo' => 10, 'precipitacion_anual' => 1000, 'temperatura' => 25, 'humedad' => 60];
-                default:
-                    return $this->idealValues;
+        $soilType = $soil->orden;
+        if (!isset($this->idealValues[$soilType][$crop])) {
+            throw new \InvalidArgumentException("No hay datos para el cultivo '$crop' en el tipo de suelo '$soilType'");
+        }
+
+        $actualValues = [
+            'ph' => $soil->ph,
+            'mo' => $soil->mo,
+            'al3' => $soil->al3,
+            'fosforo' => $soil->fosforo,
+            'precipitacion_anual' => $soil->precipitacion_anual,
+            'temperatura' => $soil->temperatura,
+            'humedad' => $soil->humedad,
+        ];
+
+        // Usar valores ideales si los valores reales no están disponibles
+        foreach ($actualValues as $key => &$value) {
+            if ($value === null || $value === 0) {
+                $value = $this->idealValues[$soilType][$crop][$key];
             }
         }
-    }
 
+        return $actualValues;
+    }
     private function calculateGlobalSuitability(array $actualValues, array $idealValues, array $weights): float
     {
         $globalSuitability = 0;
-
         foreach ($actualValues as $property => $actualValue) {
             $idealValue = $idealValues[$property];
             $weight = $weights[$property];
@@ -466,23 +280,17 @@ class CropRotationService
             $suitability = $this->calculateSuitabilityFactor($actualValue, $idealValue);
             $globalSuitability += $suitability * $weight;
         }
-
         return $globalSuitability;
     }
-
     private function calculateSuitabilityFactor(float $actual, float $ideal): float
     {
-        $maxDifference = 0.5 * $ideal; // Se considera una diferencia máxima del 50% del valor ideal
+        $maxDifference = 0.5 * $ideal;
         $difference = abs($actual - $ideal);
         if ($difference > $maxDifference) {
-            return 0; // Si la diferencia excede el 50% del valor ideal, se asigna una conveniencia de 0
+            return 0;
         }
-
-        $suitability = 1 - ($difference / $maxDifference); // Cálculo lineal de la conveniencia
-
-        return $suitability;
+        return 1 - pow($difference / $maxDifference, 2); // Función cuadrática para una penalización más suave
     }
-
     private function assignDefaultValues(Soil $soil): Soil
     {
         $soil->ph = $soil->ph ?? 0;
@@ -492,60 +300,152 @@ class CropRotationService
         $soil->precipitacion_anual = $soil->precipitacion_anual ?? 0;
         $soil->temperatura = $soil->temperatura ?? 0;
         $soil->humedad = $soil->humedad ?? 0;
-
         return $soil;
     }
+    private $familyGroups = [
+        'Leguminosas' => ['Soja', 'Arveja', 'Poroto', 'Habilla', 'Maní'],
+        'Solanáceas' => ['Tomate', 'Papa', 'Locote'],
+        'Crucíferas' => ['Canola', 'Zanahoria'],
+        'Cucurbitáceas' => ['Zapallo', 'Melón', 'Sandía', 'Pepino'],
+        'Gramíneas' => ['Maíz', 'Trigo', 'Arroz', 'Sorgo', 'Caña de azúcar'],
+        'Liliáceas' => ['Ajo', 'Cebolla'],
+        'Rosáceas' => ['Frutilla'],
+        'Malváceas' => ['Algodón'],
+        'Convolvuláceas' => ['Batata'],
+        'Euforbiáceas' => ['Mandioca'],
+        'Pedaliáceas' => ['Sesamo'],
+        'Lamiáceas' => ['Menta'],
+        'Asteráceas' => ['Girasol'],
+        'Rubiáceas' => ['Tabaco'],
+        'Esteviáceas' => ['Stevia'],
+        'Fabáceas' => ['Tartago sin cáscara'],
+    ];
 
+    private $cropProperties = [
+        'Soja' => ['family' => 'Leguminosas', 'nutrientDemand' => 'medium', 'rootDepth' => 'medium', 'nitrogenFixing' => true, 'soilImprovement' => 'high'],
+        'Maíz' => ['family' => 'Gramíneas', 'nutrientDemand' => 'high', 'rootDepth' => 'deep', 'nitrogenFixing' => false, 'soilImprovement' => 'medium'],
+        'Algodón' => ['family' => 'Malváceas', 'nutrientDemand' => 'high', 'rootDepth' => 'deep', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Arroz secano' => ['family' => 'Gramíneas', 'nutrientDemand' => 'high', 'rootDepth' => 'shallow', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Batata' => ['family' => 'Convolvuláceas', 'nutrientDemand' => 'medium', 'rootDepth' => 'medium', 'nitrogenFixing' => false, 'soilImprovement' => 'medium'],
+        'Mandioca' => ['family' => 'Euforbiáceas', 'nutrientDemand' => 'low', 'rootDepth' => 'deep', 'nitrogenFixing' => false, 'soilImprovement' => 'medium'],
+        'Maní' => ['family' => 'Leguminosas', 'nutrientDemand' => 'medium', 'rootDepth' => 'medium', 'nitrogenFixing' => true, 'soilImprovement' => 'high'],
+        'Sorgo para grano' => ['family' => 'Gramíneas', 'nutrientDemand' => 'medium', 'rootDepth' => 'deep', 'nitrogenFixing' => false, 'soilImprovement' => 'medium'],
+        'Menta' => ['family' => 'Lamiáceas', 'nutrientDemand' => 'medium', 'rootDepth' => 'shallow', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Stevia' => ['family' => 'Asteráceas', 'nutrientDemand' => 'medium', 'rootDepth' => 'shallow', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Tabaco' => ['family' => 'Solanáceas', 'nutrientDemand' => 'high', 'rootDepth' => 'medium', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Girasol' => ['family' => 'Asteráceas', 'nutrientDemand' => 'high', 'rootDepth' => 'deep', 'nitrogenFixing' => false, 'soilImprovement' => 'medium'],
+        'Trigo' => ['family' => 'Gramíneas', 'nutrientDemand' => 'medium', 'rootDepth' => 'medium', 'nitrogenFixing' => false, 'soilImprovement' => 'medium'],
+        'Zanahoria' => ['family' => 'Apiáceas', 'nutrientDemand' => 'medium', 'rootDepth' => 'deep', 'nitrogenFixing' => false, 'soilImprovement' => 'medium'],
+        'Poroto' => ['family' => 'Leguminosas', 'nutrientDemand' => 'low', 'rootDepth' => 'shallow', 'nitrogenFixing' => true, 'soilImprovement' => 'high'],
+        'Ajo' => ['family' => 'Liliáceas', 'nutrientDemand' => 'medium', 'rootDepth' => 'shallow', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Sesamo' => ['family' => 'Pedaliáceas', 'nutrientDemand' => 'medium', 'rootDepth' => 'medium', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Arveja' => ['family' => 'Leguminosas', 'nutrientDemand' => 'low', 'rootDepth' => 'medium', 'nitrogenFixing' => true, 'soilImprovement' => 'high'],
+        'Canola' => ['family' => 'Crucíferas', 'nutrientDemand' => 'high', 'rootDepth' => 'medium', 'nitrogenFixing' => false, 'soilImprovement' => 'medium'],
+        'Cebolla de cabeza' => ['family' => 'Liliáceas', 'nutrientDemand' => 'medium', 'rootDepth' => 'shallow', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Frutilla' => ['family' => 'Rosáceas', 'nutrientDemand' => 'medium', 'rootDepth' => 'shallow', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Habilla' => ['family' => 'Leguminosas', 'nutrientDemand' => 'low', 'rootDepth' => 'medium', 'nitrogenFixing' => true, 'soilImprovement' => 'high'],
+        'Locote' => ['family' => 'Solanáceas', 'nutrientDemand' => 'medium', 'rootDepth' => 'medium', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Papa' => ['family' => 'Solanáceas', 'nutrientDemand' => 'high', 'rootDepth' => 'shallow', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Tomate' => ['family' => 'Solanáceas', 'nutrientDemand' => 'high', 'rootDepth' => 'medium', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+        'Caña de azúcar' => ['family' => 'Gramíneas', 'nutrientDemand' => 'high', 'rootDepth' => 'deep', 'nitrogenFixing' => false, 'soilImprovement' => 'medium'],
+        'Tartago sin cáscara' => ['family' => 'Euforbiáceas', 'nutrientDemand' => 'medium', 'rootDepth' => 'deep', 'nitrogenFixing' => false, 'soilImprovement' => 'low'],
+    ];
     private function applyRotationRules(array $orderedCrops): array
     {
         $rotatedCrops = [];
-
-        $familyGroups = [
-            'Leguminosas' => ['Soja', 'Arveja', 'Poroto', 'Habilla', 'Maní'],
-            'Solanáceas' => ['Tomate', 'Papa', 'Locote'],
-            'Crucíferas' => ['Canola', 'Zanahoria'],
-            'Cucurbitáceas' => ['Zapallo', 'Melón', 'Sandía', 'Pepino'],
-            'Gramíneas' => ['Maíz', 'Trigo', 'Arroz', 'Sorgo', 'Caña de azúcar'],
-            'Liliáceas' => ['Ajo', 'Cebolla'],
-            'Rosáceas' => ['Frutilla'],
-            'Malváceas' => ['Algodón'],
-            'Convolvuláceas' => ['Batata'],
-            'Euforbiáceas' => ['Mandioca'],
-            'Pedaliáceas' => ['Sésamo'],
-            'Lamiáceas' => ['Menta'],
-            'Asteráceas' => ['Girasol'],
-            'Rubiáceas' => ['Tabaco'],
-            'Esteviáceas' => ['Stevia'],
-            'Fabáceas' => ['Tartago sin cáscara'],
-        ];
-
-        $previousFamily = null;
+        $familyHistory = [];
+        $lastNutrientDemand = null;
+        $lastRootDepth = null;
         $remainingCrops = $orderedCrops;
 
         while (!empty($remainingCrops)) {
-            foreach ($remainingCrops as $key => $crop) {
-                $currentFamily = $this->getCropFamily($crop, $familyGroups);
+            $bestCrop = null;
+            $bestScore = -1;
 
-                if ($currentFamily !== $previousFamily) {
-                    $rotatedCrops[] = $crop;
-                    unset($remainingCrops[$key]);
-                    $previousFamily = $currentFamily;
-                    break;
+            foreach ($remainingCrops as $key => $crop) {
+                $score = $this->calculateRotationScore($crop, $rotatedCrops, $familyHistory, $lastNutrientDemand, $lastRootDepth);
+
+                if ($score > $bestScore) {
+                    $bestScore = $score;
+                    $bestCrop = $crop;
+                    $bestKey = $key;
                 }
+            }
+
+            if ($bestCrop) {
+                $rotatedCrops[] = $bestCrop;
+                $familyHistory[$this->cropProperties[$bestCrop]['family']] = count($rotatedCrops) - 1;
+                $lastNutrientDemand = $this->cropProperties[$bestCrop]['nutrientDemand'];
+                $lastRootDepth = $this->cropProperties[$bestCrop]['rootDepth'];
+                unset($remainingCrops[$bestKey]);
             }
         }
 
         return $rotatedCrops;
     }
-
-    private function getCropFamily(string $crop, array $familyGroups): ?string
+    private function calculateRotationScore($crop, $rotatedCrops, $familyHistory, $lastNutrientDemand, $lastRootDepth)
     {
-        foreach ($familyGroups as $family => $crops) {
-            if (in_array($crop, $crops)) {
-                return $family;
+        $score = 0;
+        $properties = $this->cropProperties[$crop];
+
+        // Factor 1: Tiempo desde el último uso de la familia
+        $timeSinceLastUsed = isset($familyHistory[$properties['family']]) ? count($rotatedCrops) - $familyHistory[$properties['family']] : PHP_INT_MAX;
+        $score += $timeSinceLastUsed * 10;
+
+        // Factor 2: Alternancia de demanda de nutrientes
+        if ($lastNutrientDemand) {
+            if ($lastNutrientDemand === 'high' && $properties['nutrientDemand'] === 'low') {
+                $score += 30;
+            } elseif ($lastNutrientDemand === 'low' && $properties['nutrientDemand'] === 'high') {
+                $score += 20;
+            } elseif ($lastNutrientDemand !== $properties['nutrientDemand']) {
+                $score += 10;
             }
         }
 
-        return null;
+        // Factor 3: Alternancia de profundidad de raíces
+        if ($lastRootDepth && $lastRootDepth !== $properties['rootDepth']) {
+            $score += 15;
+        }
+
+        // Factor 4: Beneficios para el suelo
+        if ($properties['nitrogenFixing']) {
+            $score += 25;
+        }
+        switch ($properties['soilImprovement']) {
+            case 'high':
+                $score += 20;
+                break;
+            case 'medium':
+                $score += 10;
+                break;
+            case 'low':
+                $score += 5;
+                break;
+        }
+
+        // Factor 5: Priorizar cultivos de cobertura después de cultivos de alta demanda
+        if ($lastNutrientDemand === 'high' && $properties['soilImprovement'] === 'high') {
+            $score += 15;
+        }
+
+        return $score;
+    }
+
+
+    public function __construct()
+    {
+        // Precalcular el mapeo inverso de cultivos a familias para un acceso más rápido
+        $this->cropToFamily = [];
+        foreach ($this->familyGroups as $family => $crops) {
+            foreach ($crops as $crop) {
+                $this->cropToFamily[$crop] = $family;
+            }
+        }
+    }
+
+    private function getCropFamily(string $crop): ?string
+    {
+        return $this->cropToFamily[$crop] ?? null;
     }
 }

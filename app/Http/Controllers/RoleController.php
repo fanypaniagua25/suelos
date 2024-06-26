@@ -14,7 +14,7 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $x['title']         = 'Role';
+        $x['title']         = 'Roles';
         $x['data']          = Role::with('permissions')->get();
         $x['permission']    = Permission::orderBy('id', 'desc')->get();
         return view('admin.role', $x);
@@ -39,10 +39,10 @@ class RoleController extends Controller
             ]);
             $role->givePermissionTo($request->permissions);
             DB::commit();
-            Alert::success('Pemberitahuan', 'Data <b>' . $role->name . '</b> berhasil dibuat')->toToast()->toHtml();
+            Alert::success('Atenci&oacute;n', 'Data <b>' . $role->name . '</b> creado exitosamente')->toToast()->toHtml();
         } catch (\Throwable $th) {
             DB::rollback();
-            Alert::error('Pemberitahuan', 'Data <b>' . $role->name . '</b> gagal dibuat : ' . $th->getMessage())->toToast()->toHtml();
+            Alert::error('Atenci&oacute;n', 'Data <b>' . $role->name . '</b> fallo al crear : ' . $th->getMessage())->toToast()->toHtml();
         }
         return back();
     }
@@ -76,10 +76,10 @@ class RoleController extends Controller
             ]);
             $role->syncPermissions($request->permissions);
             DB::commit();
-            Alert::success('Pemberitahuan', 'Data <b>' . $role->name . '</b> berhasil disimpan')->toToast()->toHtml();
+            Alert::success('Atenci&oacute;n', 'Data <b>' . $role->name . '</b> Guardado exitosamente')->toToast()->toHtml();
         } catch (\Throwable $th) {
             DB::rollback();
-            Alert::error('Pemberitahuan', 'Data <b>' . $role->name . '</b> gagal disimpan : ' . $th->getMessage())->toToast()->toHtml();
+            Alert::error('Atenci&oacute;n', 'Data <b>' . $role->name . '</b> error al guardar : ' . $th->getMessage())->toToast()->toHtml();
         }
         return back();
     }
@@ -89,9 +89,9 @@ class RoleController extends Controller
         try {
             $role = Role::find($request->id);
             $role->delete();
-            Alert::success('Pemberitahuan', 'Data <b>' . $role->name . '</b> berhasil dihapus')->toToast()->toHtml();
+            Alert::success('Atenci&oacute;n', 'Data <b>' . $role->name . '</b> borrado exitosamente')->toToast()->toHtml();
         } catch (\Throwable $th) {
-            Alert::error('Pemberitahuan', 'Data <b>' . $role->name . '</b> gagal dihapus : ' . $th->getMessage())->toToast()->toHtml();
+            Alert::error('Atenci&oacute;n', 'Data <b>' . $role->name . '</b> no se pudo eliminar : ' . $th->getMessage())->toToast()->toHtml();
         }
         return back();
     }
